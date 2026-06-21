@@ -6,8 +6,8 @@ export default function DashboardPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-muted-foreground">
-          Welcome back! Here's an overview of your placement journey.
+        <p className="text-muted-foreground max-w-[600px] mx-auto">
+          Welcome to PlaceIQ. We&apos;re currently setting up your dashboard.
         </p>
       </div>
 

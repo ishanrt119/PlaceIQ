@@ -1,11 +1,18 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import GoogleProvider from 'next-auth/providers/google';
 import connectDB from '@/config/database';
 import { User } from '@/models/User';
 import bcrypt from 'bcryptjs';
 
 export const authOptions: NextAuthOptions = {
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID as string,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+    }),
     CredentialsProvider({
       name: 'Credentials',
       credentials: {
@@ -33,31 +40,66 @@ export const authOptions: NextAuthOptions = {
 
         return {
           id: user._id.toString(),
-          name: user.name,
+          name: user.fullName, 
           email: user.email,
           role: user.role,
+          isVerified: user.isVerified,
+          isOnboarded: user.isOnboarded,
         };
       },
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async signIn({ user, account }) {
+      if (account?.provider === 'google') {
+        if (!user.email || !user.name) {
+          return false;
+        }
+        await connectDB();
+        const existingUser = await User.findOne({ email: user.email });
+        if (!existingUser) {
+          const newUser = await User.create({
+            email: user.email,
+            fullName: user.name,
+            profilePicture: user.image || '',
+            role: 'STUDENT',
+            isVerified: true, // Google accounts are implicitly verified
+            isOnboarded: false,
+          });
+          user.id = newUser._id.toString();
+          (user as any).role = newUser.role;
+          (user as any).isVerified = newUser.isVerified;
+          (user as any).isOnboarded = newUser.isOnboarded;
+        } else {
+          user.id = existingUser._id.toString();
+          (user as any).role = existingUser.role;
+          (user as any).isVerified = existingUser.isVerified;
+          (user as any).isOnboarded = existingUser.isOnboarded;
+        }
+      }
+      return true;
+    },
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         token.id = user.id;
-        token.role = user.role;
+        token.role = (user as any).role || 'STUDENT';
+        token.isVerified = (user as any).isVerified || false;
+        token.isOnboarded = (user as any).isOnboarded || false;
       }
       return token;
     },
     async session({ session, token }) {
       if (token && session.user) {
         session.user.id = token.id as string;
-        session.user.role = token.role as 'STUDENT' | 'ADMIN';
+        session.user.role = token.role as 'STUDENT' | 'PLACEMENT_OFFICER' | 'ADMIN';
+        (session.user as any).isVerified = token.isVerified as boolean;
+        (session.user as any).isOnboarded = token.isOnboarded as boolean;
       }
       return session;
     },
   },
   pages: {
-    signIn: '/login', // We haven't created this yet, but it's good practice
+    signIn: '/login',
   },
   session: {
     strategy: 'jwt',
