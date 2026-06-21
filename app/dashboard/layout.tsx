@@ -14,9 +14,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </Link>
         </div>
         <nav className="flex-1 px-4 py-4 flex flex-col gap-2">
-          <Link href="/dashboard" className="flex items-center gap-3 px-3 py-2 rounded-md bg-muted text-primary font-medium">
+          <Link href="/dashboard" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-muted/50 text-muted-foreground transition-colors">
             <LayoutDashboard className="h-4 w-4" />
             Dashboard
+          </Link>
+          <Link href="/dashboard/my-profile" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-muted/50 text-muted-foreground transition-colors">
+            <Briefcase className="h-4 w-4" />
+            My Profile
           </Link>
           <Link href="#" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-muted/50 text-muted-foreground transition-colors">
             <Briefcase className="h-4 w-4" />
