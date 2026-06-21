@@ -1,58 +1,26 @@
-import Link from 'next/link';
-import { GraduationCap, LayoutDashboard, Briefcase, FileText, Settings, LogOut } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import { AppSidebar } from "@/components/layout/app-sidebar"
+import { Separator } from "@/components/ui/separator"
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex min-h-screen flex-col md:flex-row bg-muted/40">
-      {/* Sidebar */}
-      <aside className="w-full md:w-64 bg-background border-r flex flex-col">
-        <div className="h-16 flex items-center px-6 border-b">
-          <Link className="flex items-center gap-2 font-semibold" href="/">
-            <GraduationCap className="h-6 w-6 text-primary" />
-            <span className="">PlaceIQ</span>
-          </Link>
-        </div>
-        <nav className="flex-1 px-4 py-4 flex flex-col gap-2">
-          <Link href="/dashboard" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-muted/50 text-muted-foreground transition-colors">
-            <LayoutDashboard className="h-4 w-4" />
-            Dashboard
-          </Link>
-          <Link href="/dashboard/my-profile" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-muted/50 text-muted-foreground transition-colors">
-            <Briefcase className="h-4 w-4" />
-            My Profile
-          </Link>
-          <Link href="#" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-muted/50 text-muted-foreground transition-colors">
-            <Briefcase className="h-4 w-4" />
-            Companies
-          </Link>
-          <Link href="#" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-muted/50 text-muted-foreground transition-colors">
-            <FileText className="h-4 w-4" />
-            Experiences
-          </Link>
-          <Link href="#" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-muted/50 text-muted-foreground transition-colors">
-            <Settings className="h-4 w-4" />
-            Settings
-          </Link>
-        </nav>
-        <div className="p-4 border-t">
-          <Button variant="ghost" className="w-full justify-start text-muted-foreground hover:text-foreground">
-            <LogOut className="mr-2 h-4 w-4" />
-            Log out
-          </Button>
-        </div>
-      </aside>
-
-      {/* Main Content */}
-      <main className="flex-1 flex flex-col">
-        <header className="h-16 border-b bg-background flex items-center px-6 md:hidden">
-          {/* Mobile header / toggle could go here */}
-          <span className="font-semibold">Dashboard</span>
+    <SidebarProvider>
+      <AppSidebar />
+      <SidebarInset>
+        <header className="flex h-16 shrink-0 items-center gap-2 border-b bg-background px-4 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 sticky top-0 z-10 backdrop-blur-sm bg-background/80">
+          <div className="flex items-center gap-2 px-4">
+            <SidebarTrigger className="-ml-1" />
+            <Separator orientation="vertical" className="mr-2 h-4" />
+            <div className="text-sm font-medium text-muted-foreground flex items-center gap-1">
+              {/* Basic breadcrumb placeholder */}
+              <span>Dashboard</span>
+            </div>
+          </div>
         </header>
-        <div className="flex-1 p-6">
+        <main className="flex-1 flex flex-col gap-4 p-4 lg:p-8 pt-6">
           {children}
-        </div>
-      </main>
-    </div>
-  );
+        </main>
+      </SidebarInset>
+    </SidebarProvider>
+  )
 }

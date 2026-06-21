@@ -5,6 +5,8 @@ import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import connectDB from "@/config/database";
 import { User } from "@/models/User";
+import { InterviewExperience } from "@/models/InterviewExperience";
+import ProfileHero from "@/components/profile/profile-hero";
 
 export const metadata: Metadata = {
   title: "My Profile | PlaceIQ",
@@ -27,15 +29,24 @@ export default async function MyProfilePage() {
     redirect("/login");
   }
 
+  // Get count of experiences shared by user
+  const experiencesCount = await InterviewExperience.countDocuments({ studentId: user._id });
+
   // Serialize all MongoDB data types (Dates, ObjectIds) to plain JSON strings
   const serializedUser = JSON.parse(JSON.stringify(user));
 
   return (
-    <div className="flex-1 space-y-4 max-w-5xl mx-auto">
-      <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold tracking-tight">My Profile</h2>
+    <div className="flex-1 max-w-5xl mx-auto w-full pb-20 animate-in slide-in-from-bottom-4 duration-500">
+      
+      <ProfileHero user={serializedUser} experiencesCount={experiencesCount} />
+
+      <div className="px-2" id="profile-form">
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold tracking-tight">Edit Profile Data</h2>
+          <p className="text-muted-foreground">Keep your information up to date to increase visibility.</p>
+        </div>
+        <ProfileForm initialData={serializedUser} />
       </div>
-      <ProfileForm initialData={serializedUser} />
     </div>
   );
 }

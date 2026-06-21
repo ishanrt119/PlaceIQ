@@ -37,6 +37,7 @@ export interface IUser extends Document {
   email: string;
   password?: string;
   profilePicture?: string;
+  coverUrl?: string;
   role: 'STUDENT' | 'PLACEMENT_OFFICER' | 'ADMIN';
   
   // Profile Header
@@ -139,6 +140,9 @@ const UserSchema: Schema = new Schema(
       select: false,
     },
     profilePicture: {
+      type: String,
+    },
+    coverUrl: {
       type: String,
     },
     role: {
